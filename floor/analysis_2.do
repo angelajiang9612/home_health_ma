@@ -12,6 +12,8 @@ Replaced the weighting variable (density) with eligibles_aggregate for now. Not 
 //Question: why was Medicare enrollment average so high in their estimate 
 cd  "/Users/bubbles/Desktop/HomeHealth/output/"
 
+//
+
 use MA_merged_93-22.dta, replace 
 
 rename county_ssa countySSA
