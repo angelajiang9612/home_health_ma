@@ -232,6 +232,10 @@ keep county_fips countyname eligibles enrolled penetration county_ssa year state
 
 drop if year ==2023 //no pos information 
 
+
+drop if penetration >100 //added in 09/24
+
+
 save MA_merged_93-22.dta, replace 
 
 // 5474/93169 missing penetration for all years excluding 2006 and 2007 if do not extrapolate 

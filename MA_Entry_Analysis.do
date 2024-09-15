@@ -30,7 +30,6 @@ replace entry_any = . if n_entrants==.
 gen pop_hth = persons_tot/100000
 gen n_hosp_phth = n_hospitals/pop_hth
 
-
 local controls per_capita_income percent_black percent_hispan pop_hth percent_65_74 percent_75_plus n_hosp_phth //same as Huckfeldt et al 2013 but no CON laws yet -used year fixed effects rather than linear time trends. 
 
 local outcomes n_firms n_entrants entry_any n_exits exit_any

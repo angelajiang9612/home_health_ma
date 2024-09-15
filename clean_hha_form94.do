@@ -1,6 +1,7 @@
 *Note that by design rpt_rec_num will not have duplicates, but prvdr_num will have duplicates because a firm can make multiple submissions during one financial year, each covering section of the year 
 
-*Need to check which record to keep when there are duplicates
+*Need to check which record to keep when there are duplicates -
+
 
 clear all
 set more off
@@ -846,6 +847,12 @@ encode state, gen(state_code)
 save "/Users/bubbles/Desktop/HomeHealth/output/S_all_final", replace
 
 
+//get rid of duplicates, added 11/August 
+
+use "/Users/bubbles/Desktop/HomeHealth/output/S_all_final", clear
+bysort prvdr_num year (proc_dt): keep if _n == _N  //keep the report processed at a later date, should check with the people at resdac to see if this make sense. 
+
+save "/Users/bubbles/Desktop/HomeHealth/output/S_all_final.dta", replace
 
 
 ////////////////////////////////////////

@@ -10,6 +10,8 @@
 
 ////two digit state abbreviation and three digit county fips code 
 
+////Sep 02 added 1993
+
 local vars prvdr_ctgry_sbtyp_cd prvdr_ctgry_cd pgm_trmntn_cd prvdr_num ssa_cnty_cd  fips_cnty_cd state_cd state_rgn_cd fips_state_cd
 
 
@@ -18,7 +20,7 @@ cd "/Users/bubbles/Desktop/hha_data/"
 ///do county and state unique combinations sum 
 
 
-forvalues i = 1992/1992 {
+forvalues i = 1992/1993 {
  use pos/pos`i'.dta, clear
  rename prov2805 pgm_trmntn_cd
  isvar `vars'
@@ -29,6 +31,8 @@ forvalues i = 1992/1992 {
  gen year = `i'
  save temp/pos`i'.dta, replace 
 }
+
+//why no 1993?
 
 forvalues i = 1994/2022 {
  use pos/pos`i'.dta, clear
@@ -56,16 +60,21 @@ use  "/Users/bubbles/Desktop/HomeHealth/output/pos92-22_hospitals_raw.dta", clea
 
  //unique ids for counties 
 egen n_hospitals = group(prvdr_num) //destring
-collapse (count) n_hospitals, by (year fips_cnty_cd state_cd) 
 
-rename fips_cnty_cd county_fips 
-rename state_cd state
+rename fips_cnty_cd county_fips
+rename state_cd state 
+rename fips_state_cd state_fips
 
-drop if missing(county_fips) //some missing values for this 
+drop if missing(county_fips) | missing(state_fips)
+
+//generate five digit unique state+fips first 
+gen state_fips_string = string(state_fips,"%02.0f") //two digit state code
+gen county_fips_string = string(county_fips,"%03.0f") //three digits county code 
+gen state_cty_fips = state_fips_string  + county_fips_string
+
+collapse (count) n_hospitals (firstnm) county_fips state, by (year state_cty_fips) 
 
 save  "/Users/bubbles/Desktop/HomeHealth/output/pos92-22_hospitals.dta", replace 
-
-
 
 
 
