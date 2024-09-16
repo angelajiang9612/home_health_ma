@@ -10,25 +10,16 @@ Replaced the weighting variable (density) with eligibles_aggregate for now. Not 
 *without doing the sample selection in original paper, or doi
 
 //Question: why was Medicare enrollment average so high in their estimate 
-cd  "/Users/bubbles/Desktop/HomeHealth/output/"
 
-//
-
-use MA_merged_93-22.dta, replace 
-
-rename county_ssa countySSA
-
-keep if inrange(year,1997,2011)
-
-merge 1:1 countySSA year using "/Users/bubbles/Desktop/HomeHealth/temp/MA_distance.dta", force //generally match is okay, can check again 
+use "/Users/bubbles/Desktop/HomeHealth/Cabral et al replication/Data/PassThroughEventStudies.dta", clear
 
 //the years used here are 1999 and after, uncheck later.
 
-bys countySSA: egen eligibles_2000=max(eligibles*(year==2000))
-sum penetration, detail
-sum penetration [aw = eligibles_2000], detail
+gen MA_penetration = (enrollees_aggregate/eligibles_aggregate)*100 //percentage on MA
+bys countyFIPS: egen eligibles_2000=max(eligibles_aggregate*(year==2000))
+sum MA_penetration
+sum MA_penetration [aw = eligibles_2000]
 
-drop if penetration >100 //
 //creating weight by population in 2000
 
 /*
@@ -39,27 +30,16 @@ gen wgt_2000 = eligibles_2000 / r(sum)
 */ 
 
 drop if missing(eligibles_2000)
-drop if missing(penetration)
-drop if penetration<=5 //No MA presence at all or less than 5 percent -doing this probably does similar stuff to sample selection as the original paper. Basically start with those with MA_presence. (can also frame as heterogeneity)
+drop if missing(MA_penetration)
+drop if MA_penetration<=5 //No MA presence at all or less than 5 percent -doing this probably does similar stuff to sample selection as the original paper. Basically start with those with MA_presence. (can also frame as heterogeneity)
 
-sum penetration
+sum MA_penetration
 
-sum penetration [aw = eligibles_2000], detail
+sum MA_penetration [aw = eligibles_2000]
 
+gen floorDistance50 = floorDistance/50
 
-//analysis
- 
-gen distance50 = distance/50 
-
-reghdfe penetration b2000.year##c.distance50  [pweight= eligibles_2000], absorb(countySSA) cluster(countySSA) 
-
-//after including the years after 2004 (inc) it affected estimate for the years before..? pre-trend of decreasing..? 
-
-
-
-//looks a bit weird but seems to indicate okay first stage. 
-
-
+reghdfe MA_penetration b2000.year##c.floorDistance50 [pweight= eligibles_2000], absorb(countyFIPS) cluster(countyFIPS)
 
 
 

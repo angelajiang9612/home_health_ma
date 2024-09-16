@@ -6,7 +6,7 @@
 
 //can update urban rural status more often. Currently 2004 is the lastest because that is the latest in the MA ratebook data. 
 
-local cpi 160.5 163.0 166.6 172.2 177.1 179.9 184.0 188.9 195.3 201.6 207.3 215.303 214.537 218.056 224.939 229.594 232.957 236.736 237.017 240.007	245.120 251.107 255.657	258.811 270.970	292.655	304.702 // cpi from 1997-2023, use 2000 year as based year, Source: USDA ERS 
+local cpi 160.5 163.0 166.6 172.2 177.1 179.9 184.0 188.9 195.3 201.6 207.3 215.303 214.537 218.056 224.939 229.594 232.957 236.736 237.017 240.007	245.120 251.107 255.657	258.811 270.970	292.655	304.702 // cpi from 1997-2023, use 2000 year as based year 
 
 use "/Users/bubbles/Desktop/HomeHealth/temp/data_97-24_working.dta", clear //this is already combined with Cabral's original dataset, which has the distance term but not the floor and the base_FFS terms. 
 *base_nominal came from ratebook date, checked after base_nominal adjusted for CPI is the base information in Cabral data
@@ -87,10 +87,8 @@ replace base_ffs = base_nominal if binding2001==0 & inrange(year,1997,2003)
 
 //for these years just use the distance in cabral et al. 
 
-///////////////////////////////////////
-//                2004               //
-///////////////////////////////////////
 
+//////////////2004///////////////////
 
 //-use the b (after MMA version)
 
@@ -115,38 +113,32 @@ gen small_floor = (floor_04 <555)
 bys countySSA: egen max_small = max(small_floor)
 drop if max_small ==1 //method doesn't work for these anyway 
 
-///
-recast float rate_04, force
-gen binding =1 if rate_04==float(613.89) & year ==2004 //get same result as if used caetgory==F, which is available this year
-replace binding =1 if rate_04==float(555.42) & year ==2004
-replace binding =0 if missing(binding) & year ==2004
+replace base_nominal = rate_04 if year==2004
+
 
 *****for binding ones
 
-replace floor=base_nominal if binding==1 & year==2004 
+replace floor=base_nominal if rate_category_04 == "F" & year==2004 
 gen base_2004_1 = ffs_04 //2004 fee for service 
 bys countySSA: egen base_ffs_2003 = total(base_ffs*(year==2003)) 
 gen base_2004_2 = 1.063*base_ffs_2003 if year ==2004 //6.3% increase from last year --! this is sometimes missing should check
 gen base_2004_3 = 0.5*577.98 + 0.5*ffs_04  //blend 
-replace base_ffs = max(base_2004_1,base_2004_2,base_2004_3) if binding==1 & year==2004 //one of the other categories
-
+replace base_ffs = max(base_2004_1,base_2004_2,base_2004_3) if rate_category_04 == "F" //one of the other categories
 
 ****for the non-binding ones 
 
-replace base_ffs = base_nominal if binding==0 & year==2004
-replace floor = floor_04 if binding==0 & year==2004 //this is just the column of floor values from data 
+replace base_ffs = base_nominal if year==2004 & rate_category_04 != "F" 
+replace floor = floor_04 if year==2004 & rate_category_04 != "F" //this is just the column of floor values from data 
 
-//gen base_test = max(floor_04,base_2004_1,base_2004_2,base_2004_3) //generally identical or very close. 
+gen base_test = max(floor_04,base_2004_1,base_2004_2,base_2004_3) //generally identical or very close. 
 
 //check if urban or rural --it seems that some rural ones became urban in 2004
 
 bys countySSA: egen floor_2004 = max(floor_04)
-recast float floor_2004, force 
+gen urban_04 =1 if inrange(floor_2004,613.89,613.90)
+replace urban_04 =0 if inrange(floor_2004,555.41,555.42)
 
-gen urban_04 =1 if floor_2004==float(613.89)
-replace urban_04 =0 if floor_2004==float(555.42)
-
-drop small_floor max_small base_2004* rate_category_04 _merge base_ffs_2003 rate_04 
+drop small_floor max_small base_2004* base_test rate_category_04 _merge base_ffs_2003 rate_04 
 
 
 //////////////2005///////////////////
@@ -182,8 +174,10 @@ assert base_2005_test == rate_05 if year==2005
 replace base_nominal = rate_05 if year==2005
 
 //categorize as binding or not 
-replace binding =1 if inlist(rate_05,654.22,591.91) & year ==2005 
+gen binding =1 if inlist(rate_05,654.22,591.91) & year ==2005 
 replace binding =0 if missing(binding) & year ==2005
+gen urban=1 if rate_05==654.22 //urban floor binds 
+gen rural =1 if rate_05 ==591.91
 
 *****for binding ones
 
@@ -220,13 +214,17 @@ bys countySSA: egen base_nominal_2005 = total(base_nominal*(year==2005))
 gen base_2006_test = 1.048*base_nominal_2005 if year==2006
 */ 
 
-***categorize as binding or not
+//////
 
-recast float rate_06, force
-replace binding =1 if rate_06==float(685.62) & year ==2006
-replace binding =1 if rate_06==float(620.32) & year ==2006
+//categorize as binding or not 
+replace base_nominal = rate_06 if year==2006 //identical, don't need this
+//categorize as binding or not 
+replace binding =1 if inrange(rate_06,685.61,685.63) & year ==2006
+replace binding =1 if inrange(rate_06,620.32,620.33) & year ==2006
+
 replace binding =0 if missing(binding) & year ==2006
- 
+replace urban=1 if rate_06==685.62 & year==2006 //urban floor binds 
+replace rural =1 if inrange(rate_06,620.32,620.33) & year==2006
 
 *****for binding ones
 
@@ -277,7 +275,6 @@ replace base_ffs = base_nominal if year==2007 & binding ==0
 replace floor = 765.13 if year==2007 & binding ==0 & urban_04==1
 replace floor = 692.29 if year==2007 & binding ==0 & urban_04==0
 
-drop ffs_07 rate_07 rate_07_unadj 
 
 /////////////2008///////////
 
@@ -286,14 +283,15 @@ drop ffs_07 rate_07 rate_07_unadj
 *budget neutrality 1.0169 
 *urban floor 791.62, rural 716.25
 
+drop ffs_07 rate_07 rate_07_unadj 
+
 merge 1:1 countySSA year using "/Users/bubbles/Desktop/HomeHealth/temp/08_calc.dta", force
 drop if _merge==2
 drop _merge 
 
 /*
 ////formula (note that need to use the 07 before budget neutrality as the base for growth rate)
-*unadjusted previous year*growth rate*budget neutrality
-gen rate_08_test = rate_07_unadj*1.0571*1.0169 if year ==2008 
+gen rate_08_test = rate_07_unadj*1.0571*1.0169 if year ==2008
 */ 
  
 recast float rate_08, force
@@ -349,154 +347,78 @@ replace base_ffs = base_nominal if year==2009 & binding ==0
 replace floor = 818.77 if year==2009 & binding ==0 & urban_04==1
 replace floor = 740.82 if year==2009 & binding ==0 & urban_04==0
 
-drop rate_09_unadj
-
-
 //2010///
-**adjusted growth rate 0.81%, this seems to be one used in calculation, it seems like the rule is no longer the higher of 2% and growth rate.  
-*Urban floor 818.86 (pace rates), rural floor 740.90
-*budget neutrality 1.001 
-**floor not as obvious this year, seems like there may be multiple similar values for one floor? In the calculations data there is pace_rate thing where floors are the same for the correct ones, and similar to the one in main rates. 
+**floor not as obvious this year, seems like there may be multiple similar values for one floor? In the calculations data there is pace_rate thing where floors are the same for the correct ones, and similar to the one in main rates, so just use this is probably fine. Should summarize the difference between the pace rate and the main rate reported in ratebook though. 
  
 **seems like an all M year -so the new floor counties should be the same as the old floor counties. 
 
-merge 1:1 countySSA year using "/Users/bubbles/Desktop/HomeHealth/temp/10_calc.dta", force
-drop if _merge==2
-drop _merge 
-
-replace base_nominal = rate_10_v2 if year==2010 //this year used pace so it is different. 
-
-/*
-//formulae (correct)
-gen rate_10_test =rate_09_unadj*1.0081*1.001
-*/ 
-
-recast float rate_10_v1 rate_10_v2, force
-
-replace binding =1 if rate_10_v2==float(818.86) & year ==2010
-replace binding =1 if rate_10_v2==float(740.90) & year ==2010
-replace binding =0 if missing(binding) & year ==2010
-
-*****for binding ones
-
-replace floor=base_nominal if binding==1 & year==2010
-replace base_ffs = ffs_10*1.001 if binding==1 & year==2010
-
-***for not binding ones 
-
-replace base_ffs = base_nominal if year==2010 & binding ==0 
-replace floor = 818.86 if year==2010 & binding ==0 & urban_04==1
-replace floor = 740.90 if year==2010 & binding ==0 & urban_04==0
-
-drop rate_09_unadj rate_09_adj ffs_10 rate_10_v1_unadj rate_10_v1 rate_10_v2_unadj rate_10_v2 rate_category_10
 
 
 
-////////////////check/////////////
+
+
 //2011///
-*this year the rates are exactly the same as the 2010 rates. So everything else should also be the same. 
-
-bys countySSA: egen binding_10 = total(binding*(year==2010)) 
-bys countySSA: egen floor_10 = total(floor*(year==2010)) 
-bys countySSA: egen base_ffs_10 = total(base_ffs*(year==2010)) 
-
-//binding 
-replace binding = binding_10 if year==2011
-
-*****binding ones*******
-
-replace base_ffs = base_ffs_10 if year==2011
-replace floor = floor_10 if year==2011
-
-drop binding_10 floor_10 base_ffs_10
 
 
-//drop other uncessary stuff 
-
-drop floor_04 ffs_04 floor_2004 rate_05 rate_category_05 ffs_05 rate_06 rate_category_06 base_ffs05 rate_adjusted_06 rate_category_07 ffs_07 rate_07_unadj rate_08 rate_category_08 rate_08_unadj rate_08_adj ffs_09 rate_09 rate_category_09
-
-replace binding = binding2001 if missing(binding)
 
 
-//gen distance = binding==1*(floor - base_ffs) //this is the actual formula used in the variable description -so this variable is only defined for the binding ones
 
-/* In earlier years sometimes for nonbinding ones base is smaller than floor, can check what is going on. Later years shouldn't matter because this doesn't happen anymore
 
-gen distance = max(floor - base_ffs,0)
-gen distance2 = floor - base_ffs if binding==1
-replace distance2 =0 if  binding==0
 
-gen diff = distance-distance2 if year<=2003 
 
-br distance floor base_ffs year if binding ==0 & year<=2003
 
-*/ 
 
-gen distance = floor - base_ffs if binding==1
-replace distance =0 if  binding==0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 
+
+
+gen distance_test = max(floor - base_ffs,0) 
 
 //normalizing distance to get in 2000 real dollars 
 
-replace distance = distance*172.2/160.5 if year==1997
-replace distance = distance*172.2/163.0 if year==1998
-replace distance = distance*172.2/166.6 if year==1999
-replace distance = distance*172.2/177.1 if year==2001
-replace distance = distance*172.2/179.9 if year==2002
-replace distance = distance*172.2/184.0  if year==2003
-replace distance = distance*172.2/188.9  if year==2004
-replace distance = distance*172.2/195.3  if year==2005
-replace distance = distance*172.2/201.6  if year==2006
-replace distance = distance*172.2/207.3  if year==2007
-replace distance = distance*172.2/215.303  if year==2008
-replace distance = distance*172.2/214.537  if year==2009
-replace distance = distance*172.2/218.056  if year==2010
-replace distance = distance*172.2/224.939  if year==2011
 
-keep if inrange(year,1997,2011) //the other years only have rates but nothing else. 
+replace distance_test = distance_test*172.2/160.5 if year==1997
 
-save "/Users/bubbles/Desktop/HomeHealth/temp/MA_distance.dta", replace 
+replace distance_test = distance_test*172.2/163.0 if year==1998
 
- 
- 
-forvalues v = 1997 (1) 2011 {
-	di `v'
-	sum binding if year==`v'
-}
+replace distance_test = distance_test*172.2/166.6 if year==1999
 
+replace distance_test = distance_test*172.2/177.1 if year==2001
 
-forvalues v = 1997 (1) 2011 {
-	di `v'
-	sum distance if year==`v', detail
-}
+replace distance_test = distance_test*172.2/179.9 if year==2002
 
+replace distance_test = distance_test*172.2/184.0  if year==2003
 
-/////distance looks okay/////
-
-
-
-//2011 wrong, 2004 looks a bit weird (probably because of so many other ways to get high rates)
-
-//
-
-/*
-gen diff = floorDistance- distance if year<=2003
-sum diff, detail //sort of okay...
-*/ 
-
-
-
-
-
-
-
-
-/*
-
-br countySSA year floorDistance distance
-
-
-
-
+br countySSA year floorDistance distance_test
 
 //the distance variable is identical in <=2000 periods, and almost identical for the after periods. 
 
@@ -588,8 +510,8 @@ replace base_ffs = base_2000_nominal*(1.02^2) if binding2001==1 & year ==2002
 replace base_ffs = base_2000_nominal*(1.02^3) if binding2001==1 & year ==2003
 
 
-gen distance =0 if binding2001==0
-replace distance = floor - base_no_floor if binding2001==1
+gen distance_test =0 if binding2001==0
+replace distance_test = floor - base_no_floor if binding2001==1
 
 
 

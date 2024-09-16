@@ -271,224 +271,11 @@ keep state county_ssa base year county_name
 order county_ssa year base state county_name
 save "/Users/bubbles/Desktop/HomeHealth/temp/rate2011.dta", replace 
 
-//!!!
-//from 2012 year onwards big changes
-///different MA star ratings get different rates 
-//for current purpose use the rates for four star MA plans, these are the median quality. 
-//this is the `risk' version  
 
-import delimited "rate2012.csv", clear  
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v6 base //four star base rates 
-drop if inrange(row,1,5)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace force ignore(",")
-gen year =2012
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2012.dta", replace 
-
-import delimited "rate2013.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v6 base //four star base rates 
-drop if inrange(row,1,4)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2013
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2013.dta", replace 
-
-import delimited "rate2014.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v6 base //four star base rates 
-drop if inrange(row,1,2)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2014
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2014.dta", replace 
-
-//!!!
-//change 
-//from this year onwards bonus form, plans with 3.5 stars or less has no bonus, higher ratings plans have bonuses 
-//for now use the 3.5% bonus one 
-//why is there a substantial decline from previous year?? -----
-//--------------something is wrong here, need to work it out ------------------
-
-import delimited "rate2015.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v5 base //four star base rates 
-drop if inrange(row,1,3)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2015
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2015.dta", replace 
-
-
-import delimited "rate2016.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v5 base //four star base rates 
-drop if inrange(row,1,5)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2016
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2016.dta", replace 
-
-import delimited "rate2017.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v5 base //four star base rates 
-drop if inrange(row,1,5)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2017
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2017.dta", replace 
-
-import delimited "rate2018.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v5 base //four star base rates 
-drop if inrange(row,1,4)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2018
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2018.dta", replace 
-
-
-import delimited "rate2019.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v5 base //four star base rates 
-drop if inrange(row,1,4)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2019
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2019.dta", replace 
-
-import delimited "rate2020.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v5 base //four star base rates 
-drop if inrange(row,1,5)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2020
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2020.dta", replace 
-
-import delimited "rate2021.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v5 base //four star base rates 
-drop if inrange(row,1,5)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2021
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2021.dta", replace 
-
-import delimited "rate2022.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v5 base //four star base rates 
-drop if inrange(row,1,5)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2022
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2022.dta", replace 
-
-
-import delimited "rate2023.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v5 base //four star base rates 
-drop if inrange(row,1,5)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2023
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2023.dta", replace 
-
-import delimited "rate2024.csv", clear 
-gen row=_n
-rename v1 county_ssa 
-rename v2 state 
-rename v3 county_name 
-rename v5 base //four star base rates 
-drop if inrange(row,1,5)
-destring county_ssa, replace force 
-drop if missing(county_ssa)
-destring base, replace ignore(",")
-gen year =2024
-keep state county_ssa base year county_name
-order county_ssa year base state county_name
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate2024.dta", replace 
-
-
-
-//
 
 use "/Users/bubbles/Desktop/HomeHealth/temp/rate1997.dta", replace 
 
-forvalues i = 1998(1)2024 {
+forvalues i = 1998(1)2011 {
 	append using  "/Users/bubbles/Desktop/HomeHealth/temp/rate`i'.dta"
 }
 
@@ -504,17 +291,17 @@ rename base base_nominal
 
 drop if year==20011 //2001a
 
-save "/Users/bubbles/Desktop/HomeHealth/temp/rate97-24.dta", replace 
+save "/Users/bubbles/Desktop/HomeHealth/temp/rate97-11.dta", replace 
 
 
-use "/Users/bubbles/Desktop/HomeHealth/temp/rate97-24.dta", clear 
+use "/Users/bubbles/Desktop/HomeHealth/temp/rate97-11.dta", clear 
 
 
 merge 1:1 countySSA year using "/Users/bubbles/Desktop/HomeHealth/Cabral et al replication/Data/PassThroughEventStudies.dta"
 
 drop _merge 
 
-save "/Users/bubbles/Desktop/HomeHealth/temp/data_97-24_working.dta", replace
+save "/Users/bubbles/Desktop/HomeHealth/temp/data_97-11_working.dta", replace
 
 
 
@@ -642,6 +429,240 @@ destring, replace
 destring countySSA, replace force 
 
 save "/Users/bubbles/Desktop/HomeHealth/temp/09_calc.dta", replace
+
+
+////////
+
+import delimited "/Users/bubbles/Desktop/hha_data/ratebook/ratebook calculations/calculationdata2010/risk2010.csv", clear 
+
+*This year use the Pace 2010 rate in th eratebooks
+
+gen row=_n
+gen year =2010
+rename v1 countySSA
+rename v7 rate_09_unadj
+rename v8 rate_09_adj
+rename v10 ffs_10 //estimated 
+rename v12 rate_10_v1_unadj
+rename v13 rate_10_v1 
+rename v14 rate_10_v2_unadj //pace 
+rename v15 rate_10_v2
+rename v16 rate_category_10 //100% M, FFS not used this year 
+
+drop if inrange(row,1,15)
+
+keep countySSA year rate_09_unadj rate_09_adj ffs_10 rate_10_v1_unadj rate_10_v1 rate_10_v2_unadj rate_10_v2 rate_category_10
+
+destring, replace 
+destring countySSA, replace force 
+
+/*
+gen diff= rate_2010_v2-rate_2010_v1 
+sum diff, detail 
+--difference is pretty small 
+*/
+
+save "/Users/bubbles/Desktop/HomeHealth/temp/10_calc.dta", replace
+
+//2011 is just the same, no need to update 
+
+
+////////
+
+import delimited "/Users/bubbles/Desktop/hha_data/ratebook/ratebook calculations/calculationdata2010/risk2010.csv", clear 
+
+*This year use the Pace 2010 rate in th eratebooks
+
+gen row=_n
+gen year =2010
+rename v1 countySSA
+rename v7 rate_09_unadj
+rename v8 rate_09_adj
+rename v10 ffs_10 //estimated 
+rename v12 rate_10_v1_unadj
+rename v13 rate_10_v1 
+rename v14 rate_10_v2_unadj //pace 
+rename v15 rate_10_v2
+rename v16 rate_category_10 //100% M, FFS not used this year 
+
+drop if inrange(row,1,15)
+
+keep countySSA year rate_09_unadj rate_09_adj ffs_10 rate_10_v1_unadj rate_10_v1 rate_10_v2_unadj rate_10_v2 rate_category_10
+
+destring, replace 
+destring countySSA, replace force 
+
+/*
+gen diff= rate_2010_v2-rate_2010_v1 
+sum diff, detail 
+--difference is pretty small 
+*/
+
+save "/Users/bubbles/Desktop/HomeHealth/temp/10_calc.dta", replace
+
+//2011 is the same as 2010, so omitted 
+
+//use pace rates for these other years, this is one rate and between three stars rates and four stars rate. 
+
+//from 2012, potentially because of all the adjustment, new rates are no longer last year*growth rate, some of the results don't match well. But FFS and minimum update rates are given each year, so can just use the given rates. 
+
+//something about new risk score model for non-floor counties. 
+
+import delimited "/Users/bubbles/Desktop/hha_data/ratebook/ratebook calculations/calculationdata2012/risk2012 PACE.csv", clear 
+
+gen row=_n
+gen year =2012
+rename v1 countySSA
+rename v8  rate_10_unadj //11 same as 10 
+rename v9  rate_10_adj
+rename v11 min_update_rate_12
+rename v15 ffs_12
+rename v16 rate_12 //pace rate1997
+rename v17 rate_category_12
+
+drop if inrange(row,1,21)
+keep countySSA year rate_10_unadj rate_10_adj ffs_12 rate_12 rate_category_12 min_update_rate_12
+
+destring, replace 
+destring ffs_12, replace force //some of the smaller counties that will be removed from analysis had missing here. 
+
+save "/Users/bubbles/Desktop/HomeHealth/temp/12_calc.dta", replace
+
+
+import delimited "/Users/bubbles/Desktop/hha_data/ratebook/ratebook calculations/calculationdata2013/risk2013PACE.csv", clear 
+
+gen row=_n
+gen year =2013
+rename v1 countySSA
+rename v8 min_update_rate_13
+rename v12 ffs_13
+rename v13 rate_13
+rename v14 rate_category_13
+
+drop if inrange(row,1,27)
+
+keep countySSA year min_update_rate_13 ffs_13 rate_13 rate_category_13
+
+destring, replace 
+destring min_update_rate_13 ffs_13 rate_13, ignore(",") replace 
+
+save "/Users/bubbles/Desktop/HomeHealth/temp/13_calc.dta", replace
+
+
+import delimited "/Users/bubbles/Desktop/hha_data/ratebook/ratebook calculations/calculationdata2014/risk2014PACE.csv", clear 
+
+gen row=_n
+gen year =2014
+rename v1 countySSA
+rename v8 min_update_rate_14
+rename v12 ffs_14
+rename v13 rate_14
+rename v14 rate_category_14
+
+drop if inrange(row,1,23)
+
+keep countySSA year min_update_rate_14 ffs_14 rate_14 rate_category_14
+
+destring, replace 
+
+save "/Users/bubbles/Desktop/HomeHealth/temp/14_calc.dta", replace
+
+
+import delimited "/Users/bubbles/Desktop/hha_data/ratebook/ratebook calculations/calculationdata2015/csv/risk2015PACE.csv", clear 
+
+gen row=_n
+gen year =2015
+rename v1 countySSA
+rename v8 min_update_rate_15
+rename v12 ffs_15
+rename v14 rate_15
+rename v15 rate_category_15
+
+drop if inrange(row,1,22)
+
+keep countySSA year min_update_rate_15 ffs_15 rate_15 rate_category_15
+
+destring, replace 
+destring min_update_rate_15, ignore(",") force replace //2NAs 
+destring countySSA, force replace //1 missing value 
+
+save "/Users/bubbles/Desktop/HomeHealth/temp/15_calc.dta", replace
+
+
+import delimited "/Users/bubbles/Desktop/hha_data/ratebook/ratebook calculations/calculationdata2016/csv/risk2016PACE.csv", clear 
+
+gen row=_n
+gen year =2016
+rename v1 countySSA
+rename v8 min_update_rate_16
+rename v13 ffs_16
+rename v16 rate_16
+rename v17 rate_category_16
+drop if inrange(row,1,25)
+
+keep countySSA year min_update_rate_16 ffs_16 rate_16 rate_category_16
+
+destring countySSA, replace force //5 lines with empty value but data for year
+drop if missing(countySSA)
+destring min_update_rate_16 ffs_16 rate_16, ignore(",") replace 
+
+
+save "/Users/bubbles/Desktop/HomeHealth/temp/16_calc.dta", replace
+
+
+import delimited "/Users/bubbles/Desktop/hha_data/ratebook/ratebook calculations/calculationdata2018/csv/risk2018PACE.csv", clear 
+
+gen row=_n
+gen year =2018
+rename v1 countySSA
+rename v8 min_update_rate_18
+rename v14 ffs_18
+rename v17 rate_18
+rename v18 rate_category_18
+drop if inrange(row,1,22)
+
+keep countySSA year min_update_rate_18 ffs_18 rate_18 rate_category_18
+
+destring countySSA, replace force //1 missing 
+drop if missing(countySSA)
+destring min_update_rate_18 ffs_18 rate_18, ignore(",") replace 
+
+save "/Users/bubbles/Desktop/HomeHealth/temp/18_calc.dta", replace
+
+
+
+import delimited "/Users/bubbles/Desktop/hha_data/ratebook/ratebook calculations/calculationdata2019/csv/risk2019PACE.csv", clear 
+
+gen row=_n
+gen year =2019
+rename v1 countySSA
+rename v8 min_update_rate_19
+rename v13 ffs_19
+rename v16 rate_19
+rename v17 rate_category_19
+drop if inrange(row,1,23)
+
+keep countySSA year min_update_rate_19 ffs_19 rate_19 rate_category_19
+
+destring countySSA, replace force //1 missing 
+drop if missing(countySSA)
+destring min_update_rate_19 ffs_19 rate_19, ignore(",") replace 
+
+save "/Users/bubbles/Desktop/HomeHealth/temp/19_calc.dta", replace
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
