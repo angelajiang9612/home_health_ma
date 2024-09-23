@@ -49,7 +49,6 @@ forvalues y = 2002/2003 {
 	local i = `i' + 1 
 }
 
-
 /////////////////////////
 //for the none binding ones 
 ///////////////////////////
@@ -827,8 +826,6 @@ replace floor = 882.38 if year==2019 & binding ==0 & urban_04==0
 drop  min_update_rate_19 ffs_19 rate_19 rate_category_19
 
 tab binding if year==2019 //46.17 
-
-
 
 
 //gen distance = binding==1*(floor - base_ffs) //this is the actual formula used in the variable description -so this variable is only defined for the binding ones
