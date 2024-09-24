@@ -228,15 +228,11 @@ foreach v in `vars'{
 
 gen pene_inter = missing(penetration_original) & !missing(penetration) //interpolated or not 
 
-keep county_fips countyname eligibles enrolled penetration county_ssa year state small pene_inter 
-
-drop if year ==2023 //no pos information 
-
+keep county_fips countyname eligibles enrolled penetration county_ssa year state state_fips small pene_inter 
 
 drop if penetration >100 //added in 09/24
 
-
-save MA_merged_93-22.dta, replace 
+save MA_merged_93-23.dta, replace 
 
 // 5474/93169 missing penetration for all years excluding 2006 and 2007 if do not extrapolate 
 

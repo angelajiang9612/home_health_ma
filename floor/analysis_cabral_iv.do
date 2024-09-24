@@ -36,17 +36,17 @@ drop if penetration >100 & !missing(penetration)
 drop if missing(eligibles_2000)
 drop if missing(penetration)
 
-keep if inrange(year,2006,2019) //the previous years wouldn't have any effect because the policy was not enacted yet
-
 gen distance50 = distance/50 
 
-local controls per_capita_income percent_black percent_hispan pop_hth percent_65_74 percent_75_plus n_hosp_phth
+reghdfe penetration b2000.year##c.distance50  [pweight= eligibles_2000], absorb(countySSA) cluster(countySSA) 
+
+//not controling for distance 
+
+reghdfe penetration b2000.year#c.distance50 [pweight= eligibles_2000], absorb(countySSA year) cluster(countySSA) 
 
 reghdfe penetration distance50 `controls' [pweight= eligibles_2000], absorb(year countySSA) cluster(countySSA) 
 
-import excel "/Users/bubbles/Desktop/hha_data/misc_duggan/ruralurbancodes2003.xls", sheet("beale03") firstrow clear
-
-
+keep if inrange(year,2006,2019) 
 
 
 

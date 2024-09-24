@@ -102,9 +102,6 @@ foreach var in `outcomes' {
 }
 
 
-
-
-
 ///
 
 reghdfe n_firms penetration `controls' [aweight=pop_hth], absorb(year county_id) vce (cluster state)

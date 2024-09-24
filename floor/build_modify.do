@@ -414,12 +414,9 @@ replace floor = 740.90 if year==2010 & binding ==0 & urban_04==0
 
 drop rate_09_unadj rate_09_adj ffs_10 rate_10_v1_unadj rate_10_v1 rate_10_v2_unadj rate_10_v2 rate_category_10
 
-
-
 ///////////////////////////////////////
 //                2011               //
 ///////////////////////////////////////
-
 
 *this year the rates are exactly the same as the 2010 rates. So everything else should also be the same. 
 
