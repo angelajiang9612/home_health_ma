@@ -153,7 +153,7 @@ save "/Users/bubbles/Desktop/HomeHealth/temp/cty_metro_2000_2023.dta", replace
 
 //can double check with county name 
 
-//use the 2003 to stand in for 2000-2010 because it was the only one available 
+//use the 2003 to stand in for 1993-2010 because it was the only one available 
 use "/Users/bubbles/Desktop/hha_data/ssa_fips/county_ssa_fips_2003.dta", clear
 bys fips: gen dup =cond(_n==1,0,_n)
 drop if dup>1 //1 duplicate 
@@ -164,13 +164,13 @@ drop dup dup2
 rename county county_name 
 rename abbr state 
 keep fips ssa county_name state 
-gen year =2000
-expand 11, gen(new)
+gen year =1993
+expand 18, gen(new)
 replace year = . if new==1
 sort fips year 
 by fips: replace year = year[_n-1]+1 if new == 1
 drop new 
-save "/Users/bubbles/Desktop/HomeHealth/temp/ssa_fips_2000_2010.dta", replace 
+save "/Users/bubbles/Desktop/HomeHealth/temp/ssa_fips_1993_2010.dta", replace 
 
 
 forvalues t = 2011/2017 {
@@ -218,7 +218,7 @@ forvalues t = 2018/2020 {
 
 //combining the ssa to fips translations 
 
-use "/Users/bubbles/Desktop/HomeHealth/temp/ssa_fips_2000_2010.dta", clear 
+use "/Users/bubbles/Desktop/HomeHealth/temp/ssa_fips_1993_2010.dta", clear 
 forvalues t = 2011/2020 {
 	append using "/Users/bubbles/Desktop/HomeHealth/temp/ssa_fips_`t'.dta"
 }
@@ -233,7 +233,9 @@ replace year = . if new==1
 sort fips year 
 by fips: replace year = year[_n-1]+1 if new == 1
 drop new
-save "/Users/bubbles/Desktop/HomeHealth/temp/ssa_fips_2000_2023.dta", replace 
+rename ssa county_ssa
+
+save "/Users/bubbles/Desktop/HomeHealth/temp/ssa_fips_1993_2023.dta", replace 
 
 
 ///////////////////////////////////////////////////////
@@ -241,10 +243,9 @@ save "/Users/bubbles/Desktop/HomeHealth/temp/ssa_fips_2000_2023.dta", replace
 ///////////////////////////////////////////////////////
 
 use "/Users/bubbles/Desktop/HomeHealth/temp/cty_metro_2000_2023.dta", clear 
-merge 1:1 fips year using "/Users/bubbles/Desktop/HomeHealth/temp/ssa_fips_2000_2023.dta"
+merge 1:1 fips year using "/Users/bubbles/Desktop/HomeHealth/temp/ssa_fips_1993_2023.dta"
 keep if _merge==3 //only 28 not matched from master, not matched from using is normal because master has fewer counties 
 drop _merge 
-rename ssa county_ssa
 save "/Users/bubbles/Desktop/HomeHealth/temp/cty_metro_2000_2023_ssa.dta", replace 
 
 

@@ -181,8 +181,6 @@ forvalues i = 1993/2000 {
 
 save MA_merged_93_01.dta, replace 
 
-
-
 //////putting all together 
 
 use MA_merged_93_01.dta, clear 
@@ -230,9 +228,10 @@ gen pene_inter = missing(penetration_original) & !missing(penetration) //interpo
 
 keep county_fips countyname eligibles enrolled penetration county_ssa year state state_fips small pene_inter 
 
-drop if penetration >100 //added in 09/24
+drop if penetration >100 & !missing(penetration) //added in 09/24
 
 save MA_merged_93-23.dta, replace 
 
 // 5474/93169 missing penetration for all years excluding 2006 and 2007 if do not extrapolate 
+
 
