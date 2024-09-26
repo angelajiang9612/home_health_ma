@@ -9,7 +9,6 @@
 //can update urban rural status more often. Currently 2004 is the lastest because that is the latest in the MA ratebook data. - don't need to add in 2013 urban status definition because the policy was not updated again since 2004. Only the 2004 ones carried through. 
 
  
-
 local cpi 160.5 163.0 166.6 172.2 177.1 179.9 184.0 188.9 195.3 201.6 207.3 215.303 214.537 218.056 224.939 229.594 232.957 236.736 237.017 240.007	245.120 251.107 255.657	258.811 270.970	292.655	304.702 // cpi from 1997-2023, use 2000 year as based year, Source: USDA ERS 
 
 use "/Users/bubbles/Desktop/HomeHealth/temp/data_97-11_working.dta", clear //this is already combined with Cabral's original dataset, which has the distance term but not the floor and the base_FFS terms. 
@@ -842,36 +841,38 @@ br distance floor base_ffs year if binding ==0 & year<=2003
 gen distance = floor - base_ffs if binding==1
 replace distance =0 if  binding==0
 
-//normalizing distance to get in 2000 real dollars 
+rename base_nominal base 
 
-replace distance = distance*172.2/160.5 if year==1997
-replace distance = distance*172.2/163.0 if year==1998
-replace distance = distance*172.2/166.6 if year==1999
-replace distance = distance*172.2/177.1 if year==2001
-replace distance = distance*172.2/179.9 if year==2002
-replace distance = distance*172.2/184.0  if year==2003
-replace distance = distance*172.2/188.9  if year==2004
-replace distance = distance*172.2/195.3  if year==2005
-replace distance = distance*172.2/201.6  if year==2006
-replace distance = distance*172.2/207.3  if year==2007
-replace distance = distance*172.2/215.303  if year==2008
-replace distance = distance*172.2/214.537  if year==2009
-replace distance = distance*172.2/218.056  if year==2010
-replace distance = distance*172.2/224.939  if year==2011
+//normalizing everything to be in 2000 dollars
+foreach var in distance base base_ffs floor {
 
-replace distance = distance*172.2/229.594  if year==2012
-replace distance = distance*172.2/232.957  if year==2013
-replace distance = distance*172.2/236.736  if year==2014
-replace distance = distance*172.2/237.017  if year==2015
-replace distance = distance*172.2/240.007  if year==2016
-replace distance = distance*172.2/245.120 if year==2017
-replace distance = distance*172.2/251.107  if year==2018
-replace distance = distance*172.2/255.657 if year==2019
+	replace `var' = `var'*172.2/160.5 if year==1997
+	replace `var' = `var'*172.2/163.0 if year==1998
+	replace `var' = `var'*172.2/166.6 if year==1999
+	replace `var' = `var'*172.2/177.1 if year==2001
+	replace `var' = `var'*172.2/179.9 if year==2002
+	replace `var' = `var'*172.2/184.0  if year==2003
+	replace `var' = `var'*172.2/188.9  if year==2004
+	replace `var' = `var'*172.2/195.3  if year==2005
+	replace `var' = `var'*172.2/201.6  if year==2006
+	replace `var' = `var'*172.2/207.3  if year==2007
+	replace `var' = `var'*172.2/215.303  if year==2008
+	replace `var' = `var'*172.2/214.537  if year==2009
+	replace `var' = `var'*172.2/218.056  if year==2010
+	replace `var' = `var'*172.2/224.939  if year==2011
+	replace `var' = `var'*172.2/229.594  if year==2012
+	replace `var' = `var'*172.2/232.957  if year==2013
+	replace `var' = `var'*172.2/236.736  if year==2014
+	replace `var' = `var'*172.2/237.017  if year==2015
+	replace `var' = `var'*172.2/240.007  if year==2016
+	replace `var' = `var'*172.2/245.120 if year==2017
+	replace `var' = `var'*172.2/251.107  if year==2018
+	replace `var' = `var'*172.2/255.657 if year==2019
 
-local cpi 160.5 163.0 166.6 172.2 177.1 179.9 184.0 188.9 195.3 201.6 207.3 215.303 214.537 218.056 224.939 229.594 232.957 236.736 237.017 240.007	245.120 251.107 255.657	258.811 270.970	292.655	304.702
+	
+}
 
-drop if year>2019 //stop at 2019 for now 
-
+drop if year >2023 
 save "/Users/bubbles/Desktop/HomeHealth/temp/MA_distance.dta", replace 
 
  

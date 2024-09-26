@@ -1,11 +1,21 @@
-//v2 changed controls and to the ones used in the original POS entry exits 
+//sep 24 changed controls, added the ones used in the original POS entry exits 
+
 //only the number of firms work for 2007-2019
+
+//can try earlier years and/or allow population controls to change over time
+
+//cluster at cbsa reduced standard errors compared to cluster at county_ssa, but similar after removing 2019
+
+//first data used duggan_pos.dta 
+
+//adding the time varying controls reduced errors. 
 
 use "/Users/bubbles/Desktop/HomeHealth/temp/duggan_pos.dta", clear
 
+xtset county_ssa year 
 //try to imitate the Duggan et al analysis 
 
-keep if inrange(year, 2007,2019)
+keep if inrange(year, 2008,2018)
 keep if inrange(pop2007_metro,100000,600000) //543 rather than 576 like in their sample
 gen above= (pop2007_metro>=250000) 
 
@@ -20,7 +30,16 @@ gen group =1 if ffs_2007 <692.29 //affected group (urban indicator)
 replace group =2 if inrange(ffs_2007,692.29,765.13) //partially affected group
 replace group =3 if ffs_2007 >765.13 //no effect group 
 
-//nominalize to 2007 levels 
+//five year FFS verage 
+bys county_ssa: egen ffs_average = mean(base_ffs)
+
+//population 
+replace pop2007_metro= pop2007_metro/100000
+replace pop2007_cty = pop2007_cty/100000
+gen pop2007_metro_sq= pop2007_metro^2
+gen pop2007_cty_sq=pop2007_cty^2
+
+///
 gen base_real = base_nominal if year==2007
 replace base_real = base_nominal*207.3/215.303 if year ==2008
 replace base_real = base_nominal*207.3/214.537 if year ==2009
@@ -48,18 +67,10 @@ replace base_ffs = base_ffs*207.3/245.120 if year ==2017
 replace base_ffs = base_ffs*207.3/251.107 if year ==2018
 replace base_ffs = base_ffs*207.3/255.657 if year ==2019
 
-//five year FFS verage 
-bys county_ssa: egen ffs_average = mean(base_ffs)
-
-//population 
-replace pop2007_metro= pop2007_metro/100000
-replace pop2007_cty = pop2007_cty/100000
-gen pop2007_metro_sq= pop2007_metro^2
-gen pop2007_cty_sq=pop2007_cty^2
-
 //
 gen ncty_inverse = 1/ncty2007_metro
 
+/*
 //table 3 first stage, roughly similar. The population controls generally don't seem to do much. 
 
 reghdfe base_real urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==1, absorb(year) cluster(cbsa) //actual ffs spending is not correlated with base for this group
@@ -67,15 +78,20 @@ reghdfe base_real urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_s
 reghdfe base_real urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==2, absorb(year) cluster(cbsa) 
 
 reghdfe base_real urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==3, absorb(year) cluster(cbsa) 
+*/
 
 
-//MA penetration
+//MA penetr
+
+/*penetration
 
 reghdfe penetration urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==1, absorb(year) cluster(cbsa) //actual ffs spending is not correlated with base for this group
 
 reghdfe penetration urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==2, absorb(year) cluster(cbsa) 
 
 reghdfe penetration urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==3, absorb(year) cluster(cbsa) 
+
+*/ 
 
 /////////////////////////////////////////
 //IV estimates for entry and exit 
@@ -89,19 +105,17 @@ replace entry_any = . if n_entrants==.
 gen pop_hth = persons_tot/100000
 gen n_hosp_phth = n_hospitals/pop_hth
 
-local outcomes n_firms //n_entrants entry_any n_exits exit_any
-
-local controls per_capita_income percent_black percent_hispan percent_65_74 percent_75_plus n_hosp_phth 
-
+local outcomes n_firms n_entrants entry_any n_exits exit_any
+local controls per_capita_income percent_black percent_hispan  percent_65_74 percent_75_plus n_hosp_phth
 
 foreach var in `outcomes' {
 	ivreghdfe `var' pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average `controls' (penetration=urban) [aweight= pop_hth] if group==1, absorb(year) cluster(cbsa) 
 }
 
+
 foreach var in `outcomes' {
 	ivreghdfe `var' pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average `controls' (penetration=urban) if inlist(group,1,2) [aweight= pop_hth] , absorb(year) cluster(cbsa) 
 }
-
 
 //
 
