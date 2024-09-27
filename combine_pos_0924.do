@@ -1,14 +1,4 @@
-//compared to previous version try to entry and exits that take into consideration gaps 
-
-//combining pos and census and pos_hospitals to get final dataset for regression
-
-//currently do at a county level, can do a firm level that allows for better subsample analysis. 
-
-//census information missing for PR before 2008 
-
-//August added labor and service provision data 
-
-//try to look at spells of entry and exits 
+//combines pos info with census controls
 
 cd /Users/bubbles/Desktop/HomeHealth/output/
  
@@ -210,9 +200,6 @@ use temp_merged.dta, clear
 
 drop if year==1992 //no MA data for this
 
-merge 1:1 county_fips state year using MA_merged_93-22.dta
-
-drop _merge 
 
 //in main but not in using because missing 2006 and 2007 MA data, can interpolate later
 
@@ -238,7 +225,12 @@ replace state_cty_fips = state_fips_string  + county_fips_string if state_cty_fi
 
 drop state_fips_string county_fips_string _merge 
 
-save merged_pos_MA.dta, replace
+destring state_cty_fips, replace 
+rename state_cty_fips fips 
+rename county county_name_pos
+drop state_fips county_fips state_name state
+  
+save merged_pos_census.dta, replace
 
 
 //missing data for y variables 

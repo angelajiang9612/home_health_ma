@@ -1,55 +1,63 @@
+use "/Users/bubbles/Desktop/HomeHealth/temp/cabral092624.dta", clear
 
-cd  "/Users/bubbles/Desktop/HomeHealth/output/"
-use MA_merged_93-22.dta, clear 
+xtset county_ssa year 
+bys county_ssa: egen eligibles_2006= total(eligibles*(year==2006))
 
-merge 1:1 county_fips state year using controls_census.dta 
+gen distance50=distance/50
 
-drop if _merge ==2
-gen no_census_controls =(_merge==1)
-drop _merge 
-
-merge 1:1 county_fips state year using pos92-22_hospitals.dta
-
-replace n_hospitals =0 if _merge==1 //pos hospital data may not be super reliable, try with or without this control to see if has any effect or not
-
-drop if _merge==2
-drop _merge 
-
-gen pop_hth = persons_tot/100000
-gen n_hosp_phth = n_hospitals/pop_hth
-
-rename county_ssa countySSA
-
-keep if inrange(year,1997,2019)
-
-merge 1:1 countySSA year using "/Users/bubbles/Desktop/HomeHealth/temp/MA_distance.dta", force //generally match is okay, can check again 
-
-drop if _merge==1
-drop _merge
-
-bys countySSA: egen eligibles_2000=max(eligibles*(year==2000))
-sum penetration, detail
-sum penetration [aw = eligibles_2000], detail
-
-drop if penetration >100 & !missing(penetration)
-
-drop if missing(eligibles_2000)
+drop if missing(eligibles_2006)
 drop if missing(penetration)
+//drop if penetration<=5 
 
-gen distance50 = distance/50 
+keep if inrange(year,2006,2018)
 
-reghdfe penetration b2000.year##c.distance50  [pweight= eligibles_2000], absorb(countySSA) cluster(countySSA) 
+/*
+sum penetration [aw = eligibles_2007], detail
 
-//not controling for distance 
+reghdfe penetration b2000.year##c.distance50 [aweight= eligibles_2006], absorb(county_ssa) cluster(county_ssa) 
 
-reghdfe penetration b2000.year#c.distance50 [pweight= eligibles_2000], absorb(countySSA year) cluster(countySSA) 
+//first stage 
 
-reghdfe penetration distance50 `controls' [pweight= eligibles_2000], absorb(year countySSA) cluster(countySSA) 
+reghdfe penetration b2000.year#c.distance50 [aweight= eligibles_2006], absorb(county_ssa year) cluster(county_ssa) 
 
-keep if inrange(year,2006,2019) 
+// local controls per_capita_income percent_black percent_hispan percent_65_74 percent_75_plus n_hosp_phth pop_hth 
+
+reghdfe penetration distance50 `controls' [aweight= eligibles_2006], absorb(year county_ssa) cluster(county_ssa) //adding controls weakens the IV
+
+*/
+
+
+//entry and exit outcomes 
+
+gen exit_any=(n_exits>0 & n_exits!=.)
+replace exit_any = . if n_exits==.
+
+gen entry_any=(n_entrants>0 & n_entrants!=.)
+replace entry_any = . if n_entrants==.
+
+local outcomes n_firms n_entrants entry_any n_exits exit_any 
+local controls per_capita_income percent_black percent_hispan percent_65_74 percent_75_plus n_hosp_phth  pop_hth
+
+foreach var in `outcomes' {
+	sum `var' [aweight= eligibles_2006]
+	ivreghdfe `var'  `controls' (penetration=distance) [aweight= eligibles_2006], absorb(year county_ssa) cluster(county_ssa)
+}
+
+/*
+
+foreach var in `outcomes' {
+	ivreghdfe `var'  `controls' (penetration=distance50)  if CON==0 [aweight= pop_hth], absorb(year county_ssa) cluster(county_ssa)
+}
+
+foreach var in `outcomes' {
+	ivreghdfe `var'  `controls' (penetration=distance50)  if CON==1 [aweight= pop_hth], absorb(year county_ssa) cluster(county_ssa)
+}
 
 
 
+/*
+reghdfe penetration b2000.year#c.distance50 distance [pweight= eligibles_2000], absorb(county_ssa year) cluster(county_ssa) 
+*/ 
 
 
 

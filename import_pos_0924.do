@@ -39,7 +39,6 @@ sbunit_cnt sbunit_sw sbunit_oprtn_sw
 //most important variables: prvdr_num, prvdr_ctgry_cd fips_cnty_cd ssa_cnty_cd (county) pgm_trmntn_cd (status) gnrl_cntl_type_cd (control type), 
 
 
-cd "/Users/bubbles/Desktop/hha_data/"
 
 forvalues i = 1992/1993 {
  use pos/pos`i'.dta, clear
@@ -53,6 +52,9 @@ forvalues i = 1992/1993 {
  save temp/pos`i'.dta, replace 
 }
 
+
+use pos/pos2010.dta, clear
+ 
 forvalues i = 1994/2022 {
  use pos/pos`i'.dta, clear
  isvar `hhvars'
