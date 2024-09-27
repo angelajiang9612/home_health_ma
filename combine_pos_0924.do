@@ -25,13 +25,24 @@ gen state_cty_fips = state_fips_string  + county_fips_string
 
 egen n_firms = count(prvdr_num), by (year state_cty_fips) //number of home health agencies in county year
 
+bysort prvdr_num (year) : gen gap = year - year[_n-1] 
+
+
+
+
+
+
+
+
+
+
 egen int entryYr = min(year), by(prvdr_num)
 egen int exitYr = max(year), by(prvdr_num)
 
 gen byte entry = (year==entryYr)
 gen byte exit = (year==exitYr)
 
-//bysort prvdr_num (year) : gen gap = year - year[_n-1] --checked very few instance of gap situation
+
 
 bys year state_cty_fips: egen  n_entrants = total(entry) //number of entries in county year
 replace n_entrants =. if year==1992 //entrants undefined for first year
@@ -230,7 +241,7 @@ rename state_cty_fips fips
 rename county county_name_pos
 drop state_fips county_fips state_name state
   
-save merged_pos_census.dta, replace
+save merged_pos_census_0924.dta, replace
 
 
 //missing data for y variables 

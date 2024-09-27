@@ -70,7 +70,7 @@ replace base_ffs = base_ffs*207.3/255.657 if year ==2019
 //
 gen ncty_inverse = 1/ncty2007_metro
 
-/*
+
 //table 3 first stage, roughly similar. The population controls generally don't seem to do much. 
 
 reghdfe base_real urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==1, absorb(year) cluster(cbsa) //actual ffs spending is not correlated with base for this group
@@ -78,12 +78,11 @@ reghdfe base_real urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_s
 reghdfe base_real urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==2, absorb(year) cluster(cbsa) 
 
 reghdfe base_real urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==3, absorb(year) cluster(cbsa) 
-*/
+
 
 
 //MA penetr
 
-/*penetration
 
 reghdfe penetration urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==1, absorb(year) cluster(cbsa) //actual ffs spending is not correlated with base for this group
 
@@ -91,7 +90,7 @@ reghdfe penetration urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty
 
 reghdfe penetration urban pop2007_metro pop2007_metro_sq pop2007_cty pop2007_cty_sq ffs_average [pweight= ncty_inverse] if group==3, absorb(year) cluster(cbsa) 
 
-*/ 
+
 
 /////////////////////////////////////////
 //IV estimates for entry and exit 
